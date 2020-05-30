@@ -5,26 +5,26 @@
 #include "level.h"
 #include "draw.h"
 #include "state.h"
+#include "load.h"
 
-int main(int argc, char const *argv[]){
-
+int main(int argc, char *argv[])
+{
     // Initialization
     const int screen_width = 800;
     const int screen_height = 600;
 
-    InitWindow(screen_width,screen_height,"Presente - the game");
+    InitWindow(screen_width, screen_height, "Presente - the game");
+
     SetTargetFPS(60);
 
-    // Initialize level and fill randomly
-    level *lvl = level_new(50,40);
-    level_fill_random(lvl,6);
+    // Initialize level 
+    level *lvl = options_level(argv[1]);
 
-    // Initialize state (and add enemies)
-    state *sta = state_new();
-    state_populate_random(lvl,sta,40);
+    state *sta = option_state(lvl, argv[1]);
 
     // Main loop
-    while(!WindowShouldClose()){
+    while (!WindowShouldClose())
+    {
 
         // Update input depending if keys are pressed or not
         sta->button_state[0] = IsKeyDown(KEY_D);
@@ -33,24 +33,23 @@ int main(int argc, char const *argv[]){
         sta->button_state[3] = IsKeyDown(KEY_S);
         sta->button_state[4] = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
         // Compute the angle the player is looking at from the mouse's position relative to the screen's center
-        float mouse_y = GetMouseY()-GetScreenHeight()/2;
-        float mouse_x = GetMouseX()-GetScreenWidth()/2;
-        sta->aim_angle = atan2(-mouse_y,mouse_x);
+        float mouse_y = GetMouseY() - GetScreenHeight() / 2;
+        float mouse_x = GetMouseX() - GetScreenWidth() / 2;
+        sta->aim_angle = atan2(-mouse_y, mouse_x);
 
         // Update the state
-        state_update(lvl,sta);
+        state_update(lvl, sta);
 
         // Drawing
         BeginDrawing();
 
-            ClearBackground(RAYWHITE);
+        ClearBackground(RAYWHITE);
 
-            draw_state(lvl, sta);
+        draw_state(lvl, sta);
 
-            DrawText("Presente profe!",190,200,20,LIGHTGRAY);
+        DrawText("Presente profe!", 190, 200, 20, LIGHTGRAY);
 
         EndDrawing();
-
     }
 
     // Closer window
